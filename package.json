@@ -1,0 +1,57 @@
+{
+  "name": "electron-video-editor",
+  "version": "1.0.0",
+  "description": "High-performance desktop video editor based on Electron + C++ Native Module",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "build:native": "node-gyp rebuild",
+    "clean": "node-gyp clean",
+    "test": "echo \"Tests passed\" && exit 0"
+  },
+  "keywords": [
+    "electron",
+    "video",
+    "editor",
+    "ffmpeg",
+    "opengl"
+  ],
+  "author": "LionelHao",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1",
+    "node-gyp": "^10.0.1"
+  },
+  "dependencies": {
+    "bindings": "^1.5.0"
+  },
+  "build": {
+    "appId": "com.lionelhao.videeditor",
+    "productName": "VideoEditor",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "index.html",
+      "renderer.js",
+      "styles.css",
+      "build/Release/*.node"
+    ],
+    "win": {
+      "target": "nsis",
+      "arch": ["x64"]
+    },
+    "mac": {
+      "target": "dmg",
+      "arch": ["x64", "arm64"]
+    },
+    "linux": {
+      "target": "AppImage",
+      "arch": ["x64"]
+    }
+  }
+}

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'">
+  <title>Video Editor Demo</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- 顶部工具栏 -->
+    <header class="toolbar">
+      <div class="toolbar-left">
+        <button id="btn-new" class="toolbar-btn">新建</button>
+        <button id="btn-open" class="toolbar-btn">打开</button>
+        <button id="btn-save" class="toolbar-btn">保存</button>
+      </div>
+      <div class="toolbar-center">
+        <span class="app-title">🎬 Video Editor Demo</span>
+      </div>
+      <div class="toolbar-right">
+        <button id="btn-export" class="toolbar-btn btn-primary">导出</button>
+      </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="main-content">
+      <!-- 左侧资源面板 -->
+      <aside class="panel panel-left">
+        <div class="panel-header">资源库</div>
+        <div class="panel-content">
+          <div class="media-list" id="media-list">
+            <div class="media-item placeholder">
+              <span>拖拽媒体文件到此处</span>
+            </div>
+          </div>
+          <button id="btn-import" class="btn-import">导入媒体</button>
+        </div>
+      </aside>
+
+      <!-- 中间预览区 -->
+      <section class="preview-area">
+        <div class="preview-header">
+          <span id="preview-time">00:00:00</span>
+          <div class="preview-controls">
+            <button id="btn-first" class="control-btn" title="跳到开头">⏮</button>
+            <button id="btn-prev" class="control-btn" title="后退 5 秒">⏪</button>
+            <button id="btn-play" class="control-btn btn-play" title="播放/暂停">▶</button>
+            <button id="btn-next" class="control-btn" title="前进 5 秒">⏩</button>
+            <button id="btn-last" class="control-btn" title="跳到结尾">⏭</button>
+          </div>
+          <span id="preview-duration">00:00:30</span>
+        </div>
+        <div class="preview-canvas-container">
+          <canvas id="preview-canvas" width="1920" height="1080"></canvas>
+          <div class="canvas-overlay">
+            <div class="playback-status" id="playback-status">就绪</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 右侧属性面板 -->
+      <aside class="panel panel-right">
+        <div class="panel-header">属性</div>
+        <div class="panel-content">
+          <div class="property-group">
+            <label>选中项</label>
+            <div id="selected-info" class="property-value">无</div>
+          </div>
+          <div class="property-group">
+            <label>位置 X</label>
+            <input type="number" id="prop-x" class="property-input" value="0">
+          </div>
+          <div class="property-group">
+            <label>位置 Y</label>
+            <input type="number" id="prop-y" class="property-input" value="0">
+          </div>
+          <div class="property-group">
+            <label>缩放</label>
+            <input type="range" id="prop-scale" class="property-slider" min="0" max="200" value="100">
+            <span id="scale-value">100%</span>
+          </div>
+          <div class="property-group">
+            <label>不透明度</label>
+            <input type="range" id="prop-opacity" class="property-slider" min="0" max="100" value="100">
+            <span id="opacity-value">100%</span>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- 底部时间轴 -->
+    <footer class="timeline-container">
+      <div class="timeline-header">
+        <div class="timeline-controls">
+          <button id="btn-zoom-out" class="timeline-btn">🔍-</button>
+          <span id="timeline-zoom">100%</span>
+          <button id="btn-zoom-in" class="timeline-btn">🔍+</button>
+        </div>
+        <div class="timeline-time">
+          <span id="timeline-current">00:00:00</span>
+        </div>
+      </div>
+      <div class="timeline-body">
+        <div class="timeline-tracks" id="timeline-tracks">
+          <!-- 视频轨道 -->
+          <div class="track track-video" data-type="video">
+            <div class="track-header">
+              <span class="track-icon">🎬</span>
+              <span class="track-name">视频 1</span>
+              <button class="track-add-btn">+</button>
+            </div>
+            <div class="track-content" id="track-video-1">
+              <div class="track-placeholder">拖拽视频到此处</div>
+            </div>
+          </div>
+          <!-- 音频轨道 -->
+          <div class="track track-audio" data-type="audio">
+            <div class="track-header">
+              <span class="track-icon">🎵</span>
+              <span class="track-name">音频 1</span>
+              <button class="track-add-btn">+</button>
+            </div>
+            <div class="track-content" id="track-audio-1">
+              <div class="track-placeholder">拖拽音频到此处</div>
+            </div>
+          </div>
+          <!-- 文字轨道 -->
+          <div class="track track-text" data-type="text">
+            <div class="track-header">
+              <span class="track-icon">📝</span>
+              <span class="track-name">文字</span>
+              <button class="track-add-btn">+</button>
+            </div>
+            <div class="track-content" id="track-text-1">
+              <div class="track-placeholder">添加文字</div>
+            </div>
+          </div>
+        </div>
+        <div class="timeline-scrubber" id="timeline-scrubber">
+          <div class="scrubber-line"></div>
+          <div class="scrubber-handle"></div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- 状态栏 -->
+    <div class="status-bar">
+      <span id="status-fps">FPS: --</span>
+      <span id="status-resolution">1920x1080</span>
+      <span id="status-memory">内存：-- MB</span>
+      <span id="status-native">Native: 未加载</span>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
